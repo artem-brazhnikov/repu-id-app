@@ -2,6 +2,7 @@ import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
 import AccountModal from "./components/AccountModal";
 import ConnectButton from "./components/ConnectButton";
 import Layout from "./components/Layout";
+import SoulboundNft from "./components/SoulboundNft";
 import Verify from "./components/Verify";
 
 export default function App() {
@@ -11,7 +12,7 @@ export default function App() {
       <Layout>
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
-        <Verify />
+        <SoulboundNft />
       </Layout>
     </ChakraProvider>
   )
