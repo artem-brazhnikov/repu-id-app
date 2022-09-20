@@ -5,7 +5,7 @@ import { repuIdControllerAddress } from '../contracts'
 import repuIdControllerAbi from '../contracts/abi/RepUIdController.json';
 
 const repuIdControllerInterface = new ethers.utils.Interface(repuIdControllerAbi.abi);
-const contract = new Contract(repuIdControllerAddress, repuIdControllerInterface);
+const repuIdControllerContract = new Contract(repuIdControllerAddress, repuIdControllerInterface);
 
 console.log(`ABI: ${JSON.stringify(repuIdControllerAbi.abi)}`);
 
@@ -21,6 +21,6 @@ export function useIdentityOfNullifier(nullifierHash: BigNumber) {
 }
 
 export function useVerifyAndExecute() {
-    const { send, state } = useContractFunction(contract, 'verifyAndExecute', {});
+    const { send, state } = useContractFunction(repuIdControllerContract, 'verifyAndExecute', {});
     return { send, state };
 }
