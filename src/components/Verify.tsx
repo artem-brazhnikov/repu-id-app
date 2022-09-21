@@ -61,11 +61,11 @@ export default function Verify() {
                 }}
                 onError={(error) => console.error(error)}
             />
-            <Box p='4'>
+            {/* <Box p='4'>
                 <Button colorScheme="teal" size="lg" onClick={handleVerifyAndExecute}>
                     Verify
                 </Button>
-            </Box>
+            </Box> */}
         </Flex>
     );
 }
