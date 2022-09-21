@@ -19,7 +19,7 @@ export default function SoulboundNft() {
     const [balance, setBalance] = React.useState(useBalanceOf(account as string));
     const [tokenId, setTokenId] = React.useState(useTokenOfOwnerByIndex(account as string));
     const [metadata, setMetadata] = React.useState<Metadata>();
-    const tokenURI = useTokenURI(tokenId);
+    const tokenURI = useTokenURI(BigNumber.from(tokenId));
 
     if (tokenURI) {
         fetch(tokenURI)
