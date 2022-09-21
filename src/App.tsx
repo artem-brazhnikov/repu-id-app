@@ -12,6 +12,7 @@ export default function App() {
       <Layout>
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
+        <Verify />
         <SoulboundNft />
       </Layout>
     </ChakraProvider>
