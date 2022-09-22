@@ -2,7 +2,11 @@ import React from 'react';
 import { Flex, Button, Text, Badge, Box, Image } from "@chakra-ui/react";
 import { useBalanceOf, useIssueRepUBound, useTokenOfOwnerByIndex, useTokenURI } from '../hooks/SoulboundHooks';
 import { useEthers } from '@usedapp/core';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers, providers } from 'ethers';
+
+import { repuBoundNftAddress } from "../contracts";
+import repuBoundNftAbi from '../contracts/abi/RepUBoundNft.json';
+import { RepUBoundNft } from '../gen/types'
 
 type Metadata = {
     description: string;
@@ -14,18 +18,43 @@ type Metadata = {
 export default function SoulboundNft() {
     const { account } = useEthers();
 
+    const [tokenURI, setTokenURI] = React.useState('');
+    const [tokenId, setTokenId] = React.useState<BigNumber>();
+    const [metadata, setMetadata] = React.useState<Metadata>();
+
     console.log('%c account: ' + account, 'color: green');
 
-    const [balance, setBalance] = React.useState(useBalanceOf(account as string));
-    const [tokenId, setTokenId] = React.useState(useTokenOfOwnerByIndex(account as string));
-    const [metadata, setMetadata] = React.useState<Metadata>();
-    const tokenURI = useTokenURI(BigNumber.from(tokenId));
+    const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = web3Provider.getSigner();
 
-    if (tokenURI) {
-        fetch(tokenURI)
-            .then(res => res.json())
-            .then(data => setMetadata(data));
-    }
+    const nftContract = new ethers.Contract(repuBoundNftAddress, repuBoundNftAbi.abi, web3Provider) as RepUBoundNft;
+
+    React.useEffect(() => {
+        const readTokenData = async () => {
+            const balance = await nftContract.balanceOf(account as string);
+            console.log(`balance ${balance}`);
+            if (balance.toNumber() === 1) {
+                const tokenId = await nftContract.tokenOfOwnerByIndex(account as string, 0);
+                console.log(`tokenId ${tokenId}`);
+                if (tokenId) {
+                    setTokenId(tokenId);
+                    const tokenUri = await nftContract.tokenURI(tokenId);
+                    console.log(`tokenURI ${tokenUri}`);
+                    setTokenURI(tokenUri);
+                }
+            }
+        }
+        readTokenData();
+    }, [account]);
+
+
+    React.useEffect(() => {
+        if (tokenURI) {
+            fetch(tokenURI)
+                .then(res => res.json())
+                .then(data => setMetadata(data));
+        }
+    }, [tokenURI]);
 
     const { state, send: issueRepuBoundNft } = useIssueRepUBound();
     console.log('%c' + JSON.stringify(state), 'color: green');
@@ -49,7 +78,7 @@ export default function SoulboundNft() {
             </Box>
             <Box p="2">
                 <Badge colorScheme='green' variant='solid' color='black'>
-                    {tokenId ? `Token ID: ${tokenId}` : 'No Soulbound Token'}
+                    {tokenId ? `Token ID: ${tokenId.toString()}` : 'No Soulbound Token'}
                 </Badge>
             </Box>
             {metadata ?
